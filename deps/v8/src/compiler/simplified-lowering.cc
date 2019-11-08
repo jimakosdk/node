@@ -1668,10 +1668,8 @@ class RepresentationSelector {
               node, simplified()->CheckedUint32Bounds(p.feedback(), mode));
         }
       } else {
-        VisitBinop(
-            node,
-            UseInfo::CheckedSigned32AsWord32(kIdentifyZeros, p.feedback()),
-            UseInfo::TruncatingWord32(), MachineRepresentation::kWord32);
+        VisitBinop(node, UseInfo::CheckedTaggedAsArrayIndex(p.feedback()),
+                   UseInfo::TruncatingWord32(), MachineRepresentation::kWord32);
         if (lower()) {
           NodeProperties::ChangeOp(
               node,
@@ -2943,9 +2941,9 @@ class RepresentationSelector {
             access.machine_type.representation();
 
         // Convert to Smi if possible, such that we can avoid a write barrier.
-        if (field_representation == MachineType::RepCompressedTagged() &&
+        if (field_representation == MachineRepresentation::kTagged &&
             TypeOf(value_node).Is(Type::SignedSmall())) {
-          field_representation = MachineType::RepCompressedTaggedSigned();
+          field_representation = MachineRepresentation::kTaggedSigned;
         }
         WriteBarrierKind write_barrier_kind = WriteBarrierKindFor(
             access.base_is_tagged, field_representation, access.offset,
@@ -2985,9 +2983,9 @@ class RepresentationSelector {
             access.machine_type.representation();
 
         // Convert to Smi if possible, such that we can avoid a write barrier.
-        if (element_representation == MachineType::RepCompressedTagged() &&
+        if (element_representation == MachineRepresentation::kTagged &&
             TypeOf(value_node).Is(Type::SignedSmall())) {
-          element_representation = MachineType::RepCompressedTaggedSigned();
+          element_representation = MachineRepresentation::kTaggedSigned;
         }
         WriteBarrierKind write_barrier_kind = WriteBarrierKindFor(
             access.base_is_tagged, element_representation, access.type,
